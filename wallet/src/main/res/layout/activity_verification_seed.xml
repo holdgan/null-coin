@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <RelativeLayout
+        android:id="@+id/page_price_title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#000000"></RelativeLayout>
+
+    <!-- 行情 -->
+
+    <!--<android.support.v4.view.ViewPager-->
+    <!--android:id="@+id/page_price_pager"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" />-->
+    <!-- 滑动适配器 -->
+
+    <LinearLayout
+        android:id="@+id/ui_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/seed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:textColor="@color/black"
+            android:textColorLink="@color/black" />
+
+        <ImageButton
+            android:id="@+id/scan_qr_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/restore_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ui_1"
+        android:text="error"
+        android:textColor="@color/fg_error"
+        android:textColorLink="@color/fg_error" />
+
+    <Button
+        android:id="@+id/bt_vrificationseed_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="30dp"
+        android:text="next" />
+
+</RelativeLayout>
