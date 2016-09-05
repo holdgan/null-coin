@@ -1,42 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="#ffffff">
 
     <RelativeLayout
         android:id="@+id/page_price_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#000000" >
-    </RelativeLayout>
+        android:background="#000000"></RelativeLayout>
 
     <!-- 行情 -->
 
     <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/page_price_pager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
+    <!--android:id="@+id/page_price_pager"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" />-->
     <!-- 滑动适配器 -->
 
     <TextView
         android:id="@+id/seed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:text="deliver broken make enrich core vendor ski help sock spy purse roast token jewel female"
         android:gravity="center_horizontal"
         android:textColor="@color/black"
+        android:textIsSelectable="true"
         android:textSize="30dp"
-        android:textIsSelectable="true"/>
+        tools:text="deliver broken make enrich core vendor ski help sock spy purse roast token jewel female" />
+
+    <Button
+        android:id="@+id/bt_createseed_copy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="30dp"
+        android:text="copy" />
 
     <Button
         android:id="@+id/bt_createseed_next"
         android:layout_width="wrap_content"
-        android:layout_margin="30dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="next"
-        android:layout_alignParentBottom="true"/>
+        android:layout_margin="30dp"
+        android:text="next" />
 
 </RelativeLayout>

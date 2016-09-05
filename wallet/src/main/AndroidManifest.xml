@@ -65,6 +65,7 @@
         <activity android:name="com.coinomi.wallet.begin.SelectCoinsActivty" />
         <activity android:name="com.coinomi.wallet.begin.SetPsswordActivity" />
         <activity android:name="com.coinomi.wallet.begin.VerificationSeedActivity" />
+        <activity android:name="com.coinomi.wallet.begin.FinalizeWalletRestorationActivity" />
 
         <activity
             android:name="com.coinomi.wallet.ui.WalletActivity"

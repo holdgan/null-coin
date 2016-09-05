@@ -3,6 +3,7 @@ package com.coinomi.wallet.begin;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -40,14 +41,14 @@ import static com.coinomi.wallet.ExchangeRatesProvider.getRates;
  */
 public class SelectCoinsActivty extends Activity {
     private static final Logger log = LoggerFactory.getLogger(SelectCoinsActivty.class);
-    private Listener mListener;
+    //    private Listener mListener;
     private String message;
     private boolean isMultipleChoice;
     private ListView coinList;
     private Button nextButton;
 
     private Configuration config;
-    private Activity activity;
+    //    private Activity activity;
     private CoinExchangeListAdapter adapter;
     private Bundle args;
     private Context mContext;
@@ -95,11 +96,12 @@ public class SelectCoinsActivty extends Activity {
         mContext = SelectCoinsActivty.this;
 
         args = getIntent().getExtras();
-        args.putString(Constants.ARG_MESSAGE, message);
-        args.putBoolean(Constants.ARG_MULTIPLE_CHOICE, isMultipleChoice);
+//        args.putString(Constants.ARG_MESSAGE, message);
+//        args.putBoolean(Constants.ARG_MULTIPLE_CHOICE, isMultipleChoice);
 
         WalletApplication application = (WalletApplication) getApplication();
         config = application.getConfiguration();
+//            loaderManager = getLoaderManager();
 
 //        if (getArguments() != null) {
 //            Bundle args = getArguments();
@@ -119,7 +121,21 @@ public class SelectCoinsActivty extends Activity {
         nextButton = (Button) findViewById(R.id.button_next);
         if (isMultipleChoice) {
             nextButton.setEnabled(false);
-            nextButton.setOnClickListener(getNextOnClickListener());
+//            nextButton.setOnClickListener(getNextOnClickListener());
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ArrayList<String> ids = new ArrayList<String>();
+                    SparseBooleanArray selected = coinList.getCheckedItemPositions();
+                    for (int i = 0; i < selected.size(); i++) {
+                        if (selected.valueAt(i)) {
+                            CoinType type = getCoinType(selected.keyAt(i));
+                            ids.add(type.getId());
+                        }
+                    }
+                    selectCoins(ids);
+                }
+            });
         } else {
             nextButton.setVisibility(View.GONE);
         }
@@ -127,7 +143,7 @@ public class SelectCoinsActivty extends Activity {
         coinList = (ListView) findViewById(R.id.coins_list);
         // Set header if needed
         if (message != null) {
-            HeaderWithFontIcon header = new HeaderWithFontIcon(activity);
+            HeaderWithFontIcon header = new HeaderWithFontIcon(mContext);
 //            header.setFontIcon(R.string.font_icon_coins);
             header.setMessage(R.string.select_coins);
             coinList.addHeaderView(header, null, false);
@@ -144,6 +160,8 @@ public class SelectCoinsActivty extends Activity {
             }
         });
         coinList.setAdapter(adapter);
+
+
     }
 
     @Override
@@ -162,22 +180,22 @@ public class SelectCoinsActivty extends Activity {
 //        return view;
 //    }
 
-    private View.OnClickListener getNextOnClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<String> ids = new ArrayList<String>();
-                SparseBooleanArray selected = coinList.getCheckedItemPositions();
-                for (int i = 0; i < selected.size(); i++) {
-                    if (selected.valueAt(i)) {
-                        CoinType type = getCoinType(selected.keyAt(i));
-                        ids.add(type.getId());
-                    }
-                }
-                selectCoins(ids);
-            }
-        };
-    }
+//    private View.OnClickListener getNextOnClickListener() {
+//        return new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ArrayList<String> ids = new ArrayList<String>();
+//                SparseBooleanArray selected = coinList.getCheckedItemPositions();
+//                for (int i = 0; i < selected.size(); i++) {
+//                    if (selected.valueAt(i)) {
+//                        CoinType type = getCoinType(selected.keyAt(i));
+//                        ids.add(type.getId());
+//                    }
+//                }
+//                selectCoins(ids);
+//            }
+//        };
+//    }
 
     private void update(int currentSelection) {
         if (isMultipleChoice) {
@@ -201,11 +219,19 @@ public class SelectCoinsActivty extends Activity {
     }
 
     private void selectCoins(ArrayList<String> ids) {
-        if (mListener != null) {
+//        if (mListener != null) {
 //            Bundle args = getArguments() == null ? new Bundle() : getArguments();
-            args.putStringArrayList(Constants.ARG_MULTIPLE_COIN_IDS, ids);
-            mListener.onCoinSelection(args);
-        }
+        args.putStringArrayList(Constants.ARG_MULTIPLE_COIN_IDS, ids);
+
+//            args.putString(Constants.ARG_MESSAGE, message);
+//            args.putBoolean(Constants.ARG_MULTIPLE_CHOICE, isMultipleChoice);
+
+//            mListener.onCoinSelection(args);
+        Intent intent = new Intent();
+        intent.setClass(mContext, FinalizeWalletRestorationActivity.class);
+        intent.putExtras(args);
+        startActivity(intent);
+//        }
     }
 
 
