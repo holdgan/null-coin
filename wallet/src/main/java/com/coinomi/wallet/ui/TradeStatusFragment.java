@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,7 +32,6 @@ import android.widget.Toast;
 
 import com.coinomi.core.coins.CoinType;
 import com.coinomi.core.exchange.shapeshift.ShapeShift;
-import com.coinomi.core.exchange.shapeshift.data.ShapeShiftEmail;
 import com.coinomi.core.exchange.shapeshift.data.ShapeShiftException;
 import com.coinomi.core.exchange.shapeshift.data.ShapeShiftTxStatus;
 import com.coinomi.core.wallet.WalletAccount;
@@ -44,7 +44,6 @@ import com.coinomi.wallet.util.Fonts;
 import com.coinomi.wallet.util.WeakHandler;
 
 import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -474,6 +473,7 @@ public class TradeStatusFragment extends Fragment {
         @Override public void onLoaderReset(final Loader<Cursor> loader) { }
     };
 
+    @SuppressLint("ValidFragment")
     private DialogFragment emailReceiptDialog = new DialogFragment() {
         @Override @NonNull
         public Dialog onCreateDialog(Bundle savedInstanceState) {

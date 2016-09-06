@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="set_bip39_passphrase"></string>
+    <string name="set_password_seed_protect_explanation"></string>
+
     <string name="action_scan_qr_code">扫描</string>
     <string name="action_share">分享</string>
     <string name="action_copy">复制</string>

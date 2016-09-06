@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -997,6 +998,7 @@ public class SendFragment extends Fragment {
         selectCoinTypeDialog.show(getFragmentManager(), null);
     }
 
+    @SuppressLint("ValidFragment")
     SelectCoinTypeDialog selectCoinTypeDialog = new SelectCoinTypeDialog() {
         // FIXME crash when this dialog being restored from saved state
         @Override

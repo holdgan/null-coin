@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -47,8 +48,8 @@ import com.coinomi.wallet.WalletApplication;
 import com.coinomi.wallet.ui.widget.AmountEditView;
 import com.coinomi.wallet.util.LayoutUtils;
 import com.coinomi.wallet.util.Qr;
-import com.coinomi.wallet.util.UiUtils;
 import com.coinomi.wallet.util.ThrottlingWalletChangeListener;
+import com.coinomi.wallet.util.UiUtils;
 import com.coinomi.wallet.util.WeakHandler;
 
 import org.bitcoinj.core.Address;
@@ -298,6 +299,7 @@ public class AddressRequestFragment extends Fragment {
         this.loaderManager = getLoaderManager();
     }
 
+    @SuppressLint("ValidFragment")
     DialogFragment createNewAddressDialog = new DialogFragment() {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -433,6 +434,7 @@ final public class WalletActivity extends BaseWalletActivity implements
         selectCoinTypeDialog.show(getSupportFragmentManager(), null);
     }
 
+    @SuppressLint("ValidFragment")
     SelectCoinTypeDialog selectCoinTypeDialog = new SelectCoinTypeDialog() {
         // FIXME crash when this dialog being restored from saved state
         @Override
@@ -453,6 +455,7 @@ final public class WalletActivity extends BaseWalletActivity implements
         payWithDialog.show(getSupportFragmentManager(), null);
     }
 
+    @SuppressLint("ValidFragment")
     PayWithDialog payWithDialog = new PayWithDialog() {
         // FIXME crash when this dialog being restored from saved state
         @Override

@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -1124,6 +1125,7 @@ public class TradeSelectFragment extends Fragment {
                 .create().show();
     }
 
+    @SuppressLint("ValidFragment")
     private DialogFragment createToAccountAndProceedDialog = new DialogFragment() {
         @Override @NonNull
         public Dialog onCreateDialog(Bundle savedInstanceState) {

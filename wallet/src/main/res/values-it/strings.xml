@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="set_bip39_passphrase"></string>
+    <string name="set_password_seed_protect_explanation"></string>
+
     <string name="action_scan_qr_code">Scansiona</string>
     <string name="action_share">Condividi</string>
     <string name="action_copy">Copia</string>

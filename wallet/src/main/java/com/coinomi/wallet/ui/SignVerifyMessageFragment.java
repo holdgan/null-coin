@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -29,7 +30,6 @@ import javax.annotation.Nullable;
 
 import static android.view.View.OnClickListener;
 import static com.coinomi.core.Preconditions.checkNotNull;
-import static com.coinomi.core.Preconditions.checkState;
 
 /**
  * Fragment that prepares a transaction
@@ -145,6 +145,7 @@ public class SignVerifyMessageFragment extends Fragment {
         maybeStartVerifyingTask();
     }
 
+    @SuppressLint("ValidFragment")
     DialogFragment signingPasswordDialog = new UnlockWalletDialog() {
         @Override
         public void onPassword(CharSequence password) {

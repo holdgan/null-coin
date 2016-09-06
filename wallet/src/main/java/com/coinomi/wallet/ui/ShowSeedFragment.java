@@ -1,5 +1,6 @@
 package com.coinomi.wallet.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -140,6 +141,7 @@ public class ShowSeedFragment extends Fragment {
         }
     }
 
+    @SuppressLint("ValidFragment")
     DialogFragment passwordDialog = new UnlockWalletDialog() {
         @Override
         public void onPassword(CharSequence password) {

@@ -26,11 +26,17 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     sourceSets {
         androidTest {
             setRoot('src/test')
         }
     }
+
+
 }
 
 repositories {
