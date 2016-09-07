@@ -187,4 +187,16 @@
         <item name="android:textSize">@dimen/exchange_row_text_size_amount</item>
     </style>
 
+
+    <attr name="icons" format="reference"></attr>
+    <attr name="colors" format="color"></attr>
+    <attr name="text" format="string"></attr>
+    <attr name="text_size" format="dimension"></attr>
+
+    <declare-styleable name="ChangeColorIconWithText">
+        <attr name="icons"></attr>
+        <attr name="colors"></attr>
+        <attr name="text"></attr>
+        <attr name="text_size"></attr>
+    </declare-styleable>
 </resources>

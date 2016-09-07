@@ -86,7 +86,7 @@ public class AddressRequestFragment extends Fragment {
     private CurrencyCalculatorLink amountCalculatorLink;
     private View previousAddressesLink;
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+//    private NavigationDrawerFragment mNavigationDrawerFragment;
     private String accountId;
     private WalletPocketHD pocket;
     private int maxQrSize;
@@ -160,8 +160,8 @@ public class AddressRequestFragment extends Fragment {
         }
         type = pocket.getCoinType();
         setHasOptionsMenu(true);
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+//        mNavigationDrawerFragment = (NavigationDrawerFragment)
+//                getFragmentManager().findFragmentById(R.id.navigation_drawer);
         maxQrSize = LayoutUtils.calculateMaxQrCodeSize(getResources());
 
         loaderManager.initLoader(ID_RATE_LOADER, null, rateLoaderCallbacks);
@@ -261,13 +261,13 @@ public class AddressRequestFragment extends Fragment {
         // Only show items in the action bar relevant to this screen
         // if the drawer is not showing. Otherwise, let the drawer
         // decide what to show in the action bar.
-        if (mNavigationDrawerFragment == null || !mNavigationDrawerFragment.isDrawerOpen()) {
+//        if (mNavigationDrawerFragment == null || !mNavigationDrawerFragment.isDrawerOpen()) {
             if (showAddress == null) {
                 inflater.inflate(R.menu.request, menu);
             } else {
                 inflater.inflate(R.menu.request_single_address, menu);
             }
-        }
+//        }
     }
 
     @Override

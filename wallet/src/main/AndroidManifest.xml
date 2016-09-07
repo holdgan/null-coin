@@ -66,12 +66,13 @@
         <activity android:name="com.coinomi.wallet.begin.SetPsswordActivity" />
         <activity android:name="com.coinomi.wallet.begin.VerificationSeedActivity" />
         <activity android:name="com.coinomi.wallet.begin.FinalizeWalletRestorationActivity" />
+        <activity android:name="com.coinomi.wallet.begin.BalanceActivity" />
 
         <activity
             android:name="com.coinomi.wallet.ui.WalletActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity

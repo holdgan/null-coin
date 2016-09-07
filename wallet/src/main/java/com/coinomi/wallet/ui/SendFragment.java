@@ -151,7 +151,7 @@ public class SendFragment extends Fragment {
     private WalletAccount pocket;
     private Configuration config;
     private ContentResolver resolver;
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+//    private NavigationDrawerFragment mNavigationDrawerFragment;
     private LoaderManager loaderManager;
     private ReceivingAddressViewAdapter sendToAddressViewAdapter;
     private Map<String, ExchangeRate> localRates = new HashMap<>();
@@ -246,8 +246,8 @@ public class SendFragment extends Fragment {
 
         updateBalance();
         setHasOptionsMenu(true);
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+//        mNavigationDrawerFragment = (NavigationDrawerFragment)
+//                getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         String localSymbol = config.getExchangeCurrencyCode();
         for (ExchangeRatesProvider.ExchangeRate rate : getRates(getActivity(), localSymbol)) {
@@ -1024,12 +1024,12 @@ public class SendFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
+//        if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             inflater.inflate(R.menu.send, menu);
-        }
+//        }
     }
 
     @Override

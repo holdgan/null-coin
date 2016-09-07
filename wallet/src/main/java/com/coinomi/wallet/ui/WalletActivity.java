@@ -12,13 +12,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.coinomi.core.coins.CoinType;
@@ -28,10 +30,10 @@ import com.coinomi.core.util.GenericUtils;
 import com.coinomi.core.wallet.WalletAccount;
 import com.coinomi.wallet.Constants;
 import com.coinomi.wallet.R;
+import com.coinomi.wallet.begin.ChangeColorIconWithText;
 import com.coinomi.wallet.service.CoinService;
 import com.coinomi.wallet.service.CoinServiceImpl;
 import com.coinomi.wallet.tasks.CheckUpdateTask;
-import com.coinomi.wallet.util.Keyboard;
 import com.coinomi.wallet.util.SystemUtils;
 import com.coinomi.wallet.util.UiUtils;
 import com.coinomi.wallet.util.WeakHandler;
@@ -57,7 +59,7 @@ import static com.coinomi.wallet.ui.NavDrawerItemType.ITEM_TRADE;
  * @author Andreas Schildbach
  */
 final public class WalletActivity extends BaseWalletActivity implements
-        NavigationDrawerFragment.NavigationDrawerCallbacks, BalanceFragment.Listener,
+        OnClickListener, ViewPager.OnPageChangeListener, NavigationDrawerFragment.NavigationDrawerCallbacks, BalanceFragment.Listener,
         SendFragment.Listener {
     private static final Logger log = LoggerFactory.getLogger(WalletActivity.class);
 
@@ -74,7 +76,7 @@ final public class WalletActivity extends BaseWalletActivity implements
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+//    private NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -84,15 +86,21 @@ final public class WalletActivity extends BaseWalletActivity implements
     /**
      * For SharedPreferences, used to check if first launch ever.
      */
-    private ViewPager mViewPager;
-    private AppSectionsPagerAdapter pagerAdapter;
+//    private AppSectionsPagerAdapter pagerAdapter;
     private String currentAccountId;
     private Intent connectCoinIntent;
     private List<NavDrawerItem> navDrawerItems = new ArrayList<>();
     private ActionMode lastActionMode;
     private final Handler handler = new MyHandler(this);
 
-    public WalletActivity() {}
+
+    private ViewPager mViewPager;
+    private List<Fragment> mTabs = new ArrayList<Fragment>();
+    private FragmentPagerAdapter mAdapter;
+    private List<ChangeColorIconWithText> mTabIndicators = new ArrayList<ChangeColorIconWithText>();
+
+    public WalletActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,57 +129,75 @@ final public class WalletActivity extends BaseWalletActivity implements
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-        getSupportActionBar().setElevation(0);
+//        getSupportActionBar().setElevation(0);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+//        mNavigationDrawerFragment = (NavigationDrawerFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         // Set up the drawer.
         createNavDrawerItems();
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout),
-                navDrawerItems);
+//        mNavigationDrawerFragment.setUp(
+//                R.id.navigation_drawer,
+//                (DrawerLayout) findViewById(R.id.drawer_layout),
+//                navDrawerItems);
 
         // Set up the ViewPager, attaching the adapter and setting up a listener for when the
         // user swipes between sections.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+//        mViewPager = (ViewPager) findViewById(R.id.pager);
         // Set OffscreenPageLimit to 2 because receive fragment draws a QR code and we don't
         // want to re-render that if we go to the SendFragment and back
-        mViewPager.setOffscreenPageLimit(2);
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override public void onPageScrolled(int pos, float posOffset, int posOffsetPixels) { }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position == BALANCE) Keyboard.hideKeyboard(WalletActivity.this);
-                finishActionMode();
-            }
-
-            @Override public void onPageScrollStateChanged(int state) {}
-        });
+//        mViewPager.setOffscreenPageLimit(2);
+//        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int pos, float posOffset, int posOffsetPixels) {
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                if (position == BALANCE) Keyboard.hideKeyboard(WalletActivity.this);
+//                finishActionMode();
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//            }
+//        });
 
         // Get the last used wallet pocket and select it
         WalletAccount lastAccount = getAccount(getWalletApplication().getConfiguration().getLastAccountId());
         if (lastAccount == null && getAllAccounts().size() > 0) {
             lastAccount = getAllAccounts().get(0);
         }
+
+        initView();
+        initDatas(lastAccount.getId());
+
         // TODO, when we are able to remove accounts, show a message when no accounts found
         if (lastAccount != null) {
             navDrawerSelectAccount(lastAccount, false);
             openPocket(lastAccount, false);
         }
+
+
+
+//        mViewPager.setAdapter(mAdapter);
+//            mTabIndicators.get(2).setIconAlpha(1.0f);
+//            mViewPager.setCurrentItem(2, false);
+
+
+
+
     }
 
     private void navDrawerSelectAccount(@Nullable WalletAccount account, boolean closeDrawer) {
-        if (mNavigationDrawerFragment != null && account != null) {
-            int position = 0;
-            for (NavDrawerItem item : navDrawerItems) {
-                if (item.itemType == ITEM_COIN && account.getId().equals(item.itemData)) {
-                    mNavigationDrawerFragment.setSelectedItem(position, closeDrawer);
-                }
-                position++;
+//        if (mNavigationDrawerFragment != null && account != null) {
+        int position = 0;
+        for (NavDrawerItem item : navDrawerItems) {
+            if (item.itemType == ITEM_COIN && account.getId().equals(item.itemData)) {
+//                    mNavigationDrawerFragment.setSelectedItem(position, closeDrawer);
             }
+            position++;
         }
+//        }
     }
 
     private void createNavDrawerItems() {
@@ -243,15 +269,24 @@ final public class WalletActivity extends BaseWalletActivity implements
             currentAccountId = account.getId();
             CoinType type = account.getCoinType();
             mTitle = type.getName();
-            pagerAdapter = new AppSectionsPagerAdapter(this, account);
-            mViewPager.setAdapter(pagerAdapter);
-            mViewPager.setCurrentItem(BALANCE);
+//            pagerAdapter = new AppSectionsPagerAdapter(this, account);
+            initEvent();
+            mTabIndicators.get(1).setIconAlpha(1.0f);
+            mViewPager.setAdapter(mAdapter);
+            mViewPager.setCurrentItem(1);
             mViewPager.getAdapter().notifyDataSetChanged();
             getWalletApplication().getConfiguration().touchLastAccountId(currentAccountId);
             connectCoinService();
             if (selectInNavDrawer) {
                 navDrawerSelectAccount(account, true);
             }
+
+//            Intent intent = new Intent();
+//            Bundle args = new Bundle();
+//            args.putSerializable(Constants.ARG_ACCOUNT_ID, account.getId());
+//            intent.setClass(WalletActivity.this, BalanceActivity.class);
+//            intent.putExtras(args);
+//            startActivity(intent);
         }
     }
 
@@ -308,8 +343,7 @@ final public class WalletActivity extends BaseWalletActivity implements
 //            });
 //        }
 
-        if (pm.resolveActivity(binaryIntent, 0) != null)
-        {
+        if (pm.resolveActivity(binaryIntent, 0) != null) {
             builder.setPositiveButton(R.string.button_download, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(final DialogInterface dialog, final int id) {
@@ -341,7 +375,7 @@ final public class WalletActivity extends BaseWalletActivity implements
                     if (resultCode == Activity.RESULT_OK) {
                         final String accountId = intent.getStringExtra(Constants.ARG_ACCOUNT_ID);
                         createNavDrawerItems();
-                        mNavigationDrawerFragment.setItems(navDrawerItems);
+//                        mNavigationDrawerFragment.setItems(navDrawerItems);
                         openPocket(accountId);
                     }
                 }
@@ -465,32 +499,32 @@ final public class WalletActivity extends BaseWalletActivity implements
     };
 
     private void setSendFromCoin(final WalletAccount account, final CoinURI coinUri) {
-        if (mViewPager != null && mNavigationDrawerFragment != null) {
-            openPocket(account);
-            mViewPager.setCurrentItem(SEND);
+//        if (mViewPager != null && mNavigationDrawerFragment != null) {
+        openPocket(account);
+        mViewPager.setCurrentItem(SEND);
 
-            try {
-                ((SendFragment) pagerAdapter.getItem(SEND)).updateStateFrom(coinUri);
-            } catch (CoinURIParseException e) {
-                showScanFailedMessage(e);
-            }
-        } else {
-            // Should not happen
-            Toast.makeText(this, R.string.error_generic, Toast.LENGTH_SHORT).show();
-        }
+//        try {
+//            ((SendFragment) pagerAdapter.getItem(SEND)).updateStateFrom(coinUri);
+//        } catch (CoinURIParseException e) {
+//            showScanFailedMessage(e);
+//        }
+//        } else {
+//            // Should not happen
+//            Toast.makeText(this, R.string.error_generic, Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.global, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+//        if (mNavigationDrawerFragment != null && !mNavigationDrawerFragment.isDrawerOpen()) {
+        // Only show items in the action bar relevant to this screen
+        // if the drawer is not showing. Otherwise, let the drawer
+        // decide what to show in the action bar.
+        getMenuInflater().inflate(R.menu.global, menu);
+        restoreActionBar();
+        return true;
+//        }
+//        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -573,10 +607,10 @@ final public class WalletActivity extends BaseWalletActivity implements
 
     @Override
     public void onBackPressed() {
-        if (mNavigationDrawerFragment != null && mNavigationDrawerFragment.isDrawerOpen()) {
-            mNavigationDrawerFragment.closeDrawer();
-            return;
-        }
+//        if (mNavigationDrawerFragment != null && mNavigationDrawerFragment.isDrawerOpen()) {
+//            mNavigationDrawerFragment.closeDrawer();
+//            return;
+//        }
 
         // If not in balance screen, back button brings us there
         boolean screenChanged = goToBalance();
@@ -595,10 +629,10 @@ final public class WalletActivity extends BaseWalletActivity implements
     }
 
     private boolean resetSend() {
-        if (pagerAdapter != null) {
-            ((SendFragment) pagerAdapter.getItem(SEND)).reset();
-            return true;
-        }
+//        if (pagerAdapter != null) {
+//            ((SendFragment) pagerAdapter.getItem(SEND)).reset();
+//            return true;
+//        }
         return false;
     }
 
@@ -622,8 +656,11 @@ final public class WalletActivity extends BaseWalletActivity implements
         }
     }
 
+
     private static class MyHandler extends WeakHandler<WalletActivity> {
-        public MyHandler(WalletActivity ref) { super(ref); }
+        public MyHandler(WalletActivity ref) {
+            super(ref);
+        }
 
         @Override
         protected void weakHandleMessage(WalletActivity ref, Message msg) {
@@ -690,5 +727,118 @@ final public class WalletActivity extends BaseWalletActivity implements
                     return walletActivity.getString(R.string.wallet_title_balance);
             }
         }
+
     }
+
+
+    @Override
+    public void onClick(View v) {
+        clickTab(v);
+    }
+
+    /**
+     * 点击Tab按钮
+     *
+     * @param v
+     */
+    private void clickTab(View v) {
+        resetOtherTabs();
+
+        switch (v.getId()) {
+            case R.id.id_indicator_one:
+                mTabIndicators.get(0).setIconAlpha(1.0f);
+                mViewPager.setCurrentItem(0, false);
+                break;
+            case R.id.id_indicator_two:
+                mTabIndicators.get(1).setIconAlpha(1.0f);
+                mViewPager.setCurrentItem(1, false);
+                break;
+            case R.id.id_indicator_three:
+                mTabIndicators.get(2).setIconAlpha(1.0f);
+                mViewPager.setCurrentItem(2, false);
+                break;
+        }
+    }
+
+    /**
+     * 重置其他的TabIndicator的颜色
+     */
+    private void resetOtherTabs() {
+        for (int i = 0; i < mTabIndicators.size(); i++) {
+            mTabIndicators.get(i).setIconAlpha(0);
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset,
+                               int positionOffsetPixels) {
+        // Log.e("TAG", "position = " + position + " ,positionOffset =  "
+        // + positionOffset);
+        if (positionOffset > 0) {
+            ChangeColorIconWithText left = mTabIndicators.get(position);
+            ChangeColorIconWithText right = mTabIndicators.get(position + 1);
+            left.setIconAlpha(1 - positionOffset);
+            right.setIconAlpha(positionOffset);
+        }
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+
+    /**
+     * 初始化所有事件
+     */
+    private void initEvent() {
+
+        mViewPager.setOnPageChangeListener(this);
+
+    }
+
+    private void initDatas(String accountId) {
+        Fragment receive =  AddressRequestFragment.newInstance(accountId);
+        Fragment record = BalanceFragment.newInstance(accountId);
+        Fragment send = SendFragment.newInstance(accountId);
+        mTabs.add(receive);
+        mTabs.add(record);
+        mTabs.add(send);
+
+        mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int position) {
+                return mTabs.get(position);
+            }
+
+            @Override
+            public int getCount() {
+                return mTabs.size();
+            }
+        };
+    }
+
+    private void initView() {
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+
+        ChangeColorIconWithText one = (ChangeColorIconWithText) findViewById(R.id.id_indicator_one);
+        mTabIndicators.add(one);
+        ChangeColorIconWithText two = (ChangeColorIconWithText) findViewById(R.id.id_indicator_two);
+        mTabIndicators.add(two);
+        ChangeColorIconWithText three = (ChangeColorIconWithText) findViewById(R.id.id_indicator_three);
+        mTabIndicators.add(three);
+
+        one.setOnClickListener(this);
+        two.setOnClickListener(this);
+        three.setOnClickListener(this);
+
+    }
+
+
 }

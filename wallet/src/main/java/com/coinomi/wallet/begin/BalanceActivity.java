@@ -1,26 +1,22 @@
-package com.coinomi.wallet.ui;
+package com.coinomi.wallet.begin;
 
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +32,10 @@ import com.coinomi.wallet.ExchangeRatesProvider;
 import com.coinomi.wallet.ExchangeRatesProvider.ExchangeRate;
 import com.coinomi.wallet.R;
 import com.coinomi.wallet.WalletApplication;
+import com.coinomi.wallet.ui.ExchangeRateLoader;
+import com.coinomi.wallet.ui.NavigationDrawerFragment;
+import com.coinomi.wallet.ui.TransactionDetailsActivity;
+import com.coinomi.wallet.ui.TransactionsListAdapter;
 import com.coinomi.wallet.ui.widget.Amount;
 import com.coinomi.wallet.util.ThrottlingWalletChangeListener;
 import com.coinomi.wallet.util.WeakHandler;
@@ -55,12 +55,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 import javax.annotation.Nonnull;
 
-/**
- * Use the {@link BalanceFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Transaction>> {
-    private static final Logger log = LoggerFactory.getLogger(BalanceFragment.class);
+public class BalanceActivity extends Activity implements LoaderCallbacks<List<Transaction>> {
+    private static final Logger log = LoggerFactory.getLogger(BalanceActivity.class);
 
     private static final int WALLET_CHANGED = 0;
     private static final int UPDATE_VIEW = 1;
@@ -75,11 +71,13 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
 
     private final Handler handler = new MyHandler(this);
 
-    private static class MyHandler extends WeakHandler<BalanceFragment> {
-        public MyHandler(BalanceFragment ref) { super(ref); }
+    private static class MyHandler extends WeakHandler<BalanceActivity> {
+        public MyHandler(BalanceActivity ref) {
+            super(ref);
+        }
 
         @Override
-        protected void weakHandleMessage(BalanceFragment ref, Message msg) {
+        protected void weakHandleMessage(BalanceActivity ref, Message msg) {
             switch (msg.what) {
                 case WALLET_CHANGED:
                     ref.updateBalance();
@@ -104,9 +102,9 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
     private Configuration config;
 
     private TransactionsListAdapter adapter;
-    private LoaderManager loaderManager;
+    //    private LoaderManager loaderManager;
     private View emptyPocketMessage;
-//    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
     private Amount mainAmount;
     private Amount localAmount;
     private TextView connectionLabel;
@@ -118,80 +116,77 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
             adapter.clearLabelCache();
         }
     };
+    private Context mContext;
+//    public static BalanceActivity newInstance(String accountId) {
+//        BalanceActivity fragment = new BalanceActivity();
+//        Bundle args = new Bundle();
+//        args.putSerializable(Constants.ARG_ACCOUNT_ID, accountId);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param accountId of the account
-     * @return A new instance of fragment InfoFragment.
-     */
-    public static BalanceFragment newInstance(String accountId) {
-        BalanceFragment fragment = new BalanceFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(Constants.ARG_ACCOUNT_ID, accountId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public BalanceFragment() {
+    public BalanceActivity() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            accountId = getArguments().getString(Constants.ARG_ACCOUNT_ID);
-        }
+        setContentView(R.layout.activity_balance);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        mContext = BalanceActivity.this;
+
+
+//        try {
+//            listener = (Listener) activity;
+        resolver = getContentResolver();
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement " + Listener.class);
+//        }
+        application = (WalletApplication) getApplication();
+        config = application.getConfiguration();
+//        loaderManager = getLoaderManager();
+
+
+//        if (getArguments() != null) {
+        Bundle args = getIntent().getExtras();
+        accountId = args.getString(Constants.ARG_ACCOUNT_ID);
+//        }
         //TODO
         pocket = (AbstractWallet) application.getAccount(accountId);
         if (pocket == null) {
-            Toast.makeText(getActivity(), R.string.no_such_pocket_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, R.string.no_such_pocket_error, Toast.LENGTH_LONG).show();
             return;
         }
         type = pocket.getCoinType();
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
 //        mNavigationDrawerFragment = (NavigationDrawerFragment)
 //                getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
-        loaderManager.initLoader(ID_TRANSACTION_LOADER, null, this);
-        loaderManager.initLoader(ID_RATE_LOADER, null, rateLoaderCallbacks);
-    }
+//        loaderManager.initLoader(ID_TRANSACTION_LOADER, null, this);
+//        loaderManager.initLoader(ID_RATE_LOADER, null, rateLoaderCallbacks);
 
-    @Override
-    public void onDestroy() {
-        loaderManager.destroyLoader(ID_TRANSACTION_LOADER);
-        loaderManager.destroyLoader(ID_RATE_LOADER);
 
-        super.onDestroy();
-    }
+        final ListView transactionRows = (ListView) findViewById(R.id.transaction_rows);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_balance, container, false);
+//        View header = inflater.inflate(R.layout.fragment_balance_header, null);
+//        // Initialize your header here.
+//        transactionRows.addHeaderView(header, null, false);
+//
+//        // Set a space in the end of the list
+//        View listFooter = new View(getActivity());
+//        listFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin));
+//        transactionRows.addFooterView(listFooter);
 
-        final ListView transactionRows = (ListView) view.findViewById(R.id.transaction_rows);
-
-        View header = inflater.inflate(R.layout.fragment_balance_header, null);
-        // Initialize your header here.
-        transactionRows.addHeaderView(header, null, false);
-
-        // Set a space in the end of the list
-        View listFooter = new View(getActivity());
-        listFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin));
-        transactionRows.addFooterView(listFooter);
-
-        emptyPocketMessage = header.findViewById(R.id.history_empty);
+        emptyPocketMessage = findViewById(R.id.history_empty);
         // Hide empty message if have some transaction history
         if (pocket.getTransactions(false).size() > 0) {
             emptyPocketMessage.setVisibility(View.GONE);
         }
 
         // Init list adapter
-        adapter = new TransactionsListAdapter(inflater.getContext(), pocket);
+        adapter = new TransactionsListAdapter(mContext, pocket);
         adapter.setPrecision(AMOUNT_MEDIUM_PRECISION, 0);
         transactionRows.setAdapter(adapter);
 
@@ -205,18 +200,18 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
                     Object obj = parent.getItemAtPosition(position);
 
                     if (obj != null && obj instanceof Transaction) {
-                        Intent intent = new Intent(getActivity(), TransactionDetailsActivity.class);
+                        Intent intent = new Intent(mContext, TransactionDetailsActivity.class);
                         intent.putExtra(Constants.ARG_ACCOUNT_ID, accountId);
                         intent.putExtra(Constants.ARG_TRANSACTION_ID, ((Transaction) obj).getHashAsString());
                         startActivity(intent);
                     } else {
-                        Toast.makeText(getActivity(), getString(R.string.get_tx_info_error), Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, getString(R.string.get_tx_info_error), Toast.LENGTH_LONG).show();
                     }
                 }
             }
         });
 
-        mainAmount = (Amount) view.findViewById(R.id.main_amount);
+        mainAmount = (Amount) findViewById(R.id.main_amount);
         mainAmount.setSymbol(type.getSymbol());
         mainAmount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,7 +220,7 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
                 updateView();
             }
         });
-        localAmount = (Amount) view.findViewById(R.id.amount_local);
+        localAmount = (Amount) findViewById(R.id.amount_local);
         localAmount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,15 +228,110 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
             }
         });
 
-        connectionLabel = (TextView) view.findViewById(R.id.connection_label);
+        connectionLabel = (TextView) findViewById(R.id.connection_label);
 
         exchangeRate = ExchangeRatesProvider.getRate(
                 application.getApplicationContext(), type.getSymbol(), config.getExchangeCurrencyCode());
         // Update the amount
         updateBalance(pocket.getBalance());
 
-        return view;
+        RelativeLayout rl_receive = (RelativeLayout) findViewById(R.id.rl_receive);
+        rl_receive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent();
+//                Bundle args = new Bundle();
+//                args.putSerializable(Constants.ARG_ACCOUNT_ID, accountId);
+//                intent.setClass(mContext, AddressRequestActivity.class);
+//                intent.putExtras(args);
+//                startActivity(intent);
+            }
+        });
     }
+
+    @Override
+    public void onDestroy() {
+//        loaderManager.destroyLoader(ID_TRANSACTION_LOADER);
+//        loaderManager.destroyLoader(ID_RATE_LOADER);
+
+        super.onDestroy();
+    }
+
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//        // Inflate the layout for this fragment
+//        View view = inflater.inflate(R.layout.fragment_balance, container, false);
+//
+//        final ListView transactionRows = (ListView) view.findViewById(R.id.transaction_rows);
+//
+//        View header = inflater.inflate(R.layout.fragment_balance_header, null);
+//        // Initialize your header here.
+//        transactionRows.addHeaderView(header, null, false);
+//
+//        // Set a space in the end of the list
+//        View listFooter = new View(getActivity());
+//        listFooter.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.activity_vertical_margin));
+//        transactionRows.addFooterView(listFooter);
+//
+//        emptyPocketMessage = header.findViewById(R.id.history_empty);
+//        // Hide empty message if have some transaction history
+//        if (pocket.getTransactions(false).size() > 0) {
+//            emptyPocketMessage.setVisibility(View.GONE);
+//        }
+//
+//        // Init list adapter
+//        adapter = new TransactionsListAdapter(inflater.getContext(), pocket);
+//        adapter.setPrecision(AMOUNT_MEDIUM_PRECISION, 0);
+//        transactionRows.setAdapter(adapter);
+//
+//        // Start TransactionDetailsActivity on click
+//        transactionRows.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if (position >= transactionRows.getHeaderViewsCount()) {
+//                    // Note the usage of getItemAtPosition() instead of adapter's getItem() because
+//                    // the latter does not take into account the header (which has position 0).
+//                    Object obj = parent.getItemAtPosition(position);
+//
+//                    if (obj != null && obj instanceof Transaction) {
+//                        Intent intent = new Intent(getActivity(), TransactionDetailsActivity.class);
+//                        intent.putExtra(Constants.ARG_ACCOUNT_ID, accountId);
+//                        intent.putExtra(Constants.ARG_TRANSACTION_ID, ((Transaction) obj).getHashAsString());
+//                        startActivity(intent);
+//                    } else {
+//                        Toast.makeText(getActivity(), getString(R.string.get_tx_info_error), Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }
+//        });
+//
+//        mainAmount = (Amount) view.findViewById(R.id.main_amount);
+//        mainAmount.setSymbol(type.getSymbol());
+//        mainAmount.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                isFullAmount = !isFullAmount;
+//                updateView();
+//            }
+//        });
+//        localAmount = (Amount) view.findViewById(R.id.amount_local);
+//        localAmount.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (listener != null) listener.onLocalAmountClick();
+//            }
+//        });
+//
+//        connectionLabel = (TextView) view.findViewById(R.id.connection_label);
+//
+//        exchangeRate = ExchangeRatesProvider.getRate(
+//                application.getApplicationContext(), type.getSymbol(), config.getExchangeCurrencyCode());
+//        // Update the amount
+//        updateBalance(pocket.getBalance());
+//
+//        return view;
+//    }
 
     private void setupConnectivityStatus() {
         // Set connected for now...
@@ -261,10 +351,10 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
         super.onStop();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//    }
 
     private void checkEmptyPocketMessage() {
         if (emptyPocketMessage.isShown()) {
@@ -313,46 +403,46 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
         }
     };
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            inflater.inflate(R.menu.balance, menu);
-            // Disable sign/verify for coins that don't support it
-            menu.findItem(R.id.action_sign_verify_message).setVisible(type.canSignVerifyMessages());
+//            // Only show items in the action bar relevant to this screen
+//            // if the drawer is not showing. Otherwise, let the drawer
+//            // decide what to show in the action bar.
+//            inflater.inflate(R.menu.balance, menu);
+//            // Disable sign/verify for coins that don't support it
+//            menu.findItem(R.id.action_sign_verify_message).setVisible(type.canSignVerifyMessages());
 //        }
-    }
+//    }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            listener = (Listener) activity;
-            resolver = activity.getContentResolver();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement " + Listener.class);
-        }
-        application = (WalletApplication) activity.getApplication();
-        config = application.getConfiguration();
-        loaderManager = getLoaderManager();
-    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//        try {
+//            listener = (Listener) activity;
+//            resolver = activity.getContentResolver();
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement " + Listener.class);
+//        }
+//        application = (WalletApplication) activity.getApplication();
+//        config = application.getConfiguration();
+//        loaderManager = getLoaderManager();
+//    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        application = null;
-        pocket = null;
-    }
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        application = null;
+//        pocket = null;
+//    }
 
     @Override
     public void onResume() {
         super.onResume();
 
         resolver.registerContentObserver(AddressBookProvider.contentUri(
-                getActivity().getPackageName(), type), true, addressBookObserver);
+                mContext.getPackageName(), type), true, addressBookObserver);
 
         pocket.addEventListener(transactionChangeListener, Threading.SAME_THREAD);
 
@@ -373,7 +463,7 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
 
     @Override
     public Loader<List<Transaction>> onCreateLoader(int id, Bundle args) {
-        return new TransactionsLoader(getActivity(), pocket);
+        return new TransactionsLoader(mContext, pocket);
     }
 
     @Override
@@ -431,7 +521,7 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
                 try {
                     forceLoad();
                 } catch (final RejectedExecutionException x) {
-                    log.info("rejected execution: " + TransactionsLoader.this.toString());
+                    log.info("rejected execution: " + BalanceActivity.TransactionsLoader.this.toString());
                 }
             }
         };
@@ -465,12 +555,12 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
     }
 
     private ExchangeRate exchangeRate;
-    private final LoaderCallbacks<Cursor> rateLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+    private final LoaderCallbacks<Cursor> rateLoaderCallbacks = new LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
             String localSymbol = config.getExchangeCurrencyCode();
             String coinSymbol = type.getSymbol();
-            return new ExchangeRateLoader(getActivity(), config, localSymbol, coinSymbol);
+            return new ExchangeRateLoader(mContext, config, localSymbol, coinSymbol);
         }
 
         @Override
@@ -502,7 +592,7 @@ public class BalanceFragment extends Fragment implements LoaderCallbacks<List<Tr
             mainAmount.setAmount(newBalanceStr);
         }
 
-        if (currentBalance != null && exchangeRate != null && getView() != null) {
+        if (currentBalance != null && exchangeRate != null) {
             try {
                 Value fiatAmount = exchangeRate.rate.convert(type, currentBalance);
                 localAmount.setAmount(GenericUtils.formatFiatValue(fiatAmount));
