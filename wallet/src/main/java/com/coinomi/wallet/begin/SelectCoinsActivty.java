@@ -145,7 +145,7 @@ public class SelectCoinsActivty extends Activity {
         if (message != null) {
             HeaderWithFontIcon header = new HeaderWithFontIcon(mContext);
 //            header.setFontIcon(R.string.font_icon_coins);
-            header.setMessage(R.string.select_coins);
+//            header.setMessage(R.string.select_coins);
             coinList.addHeaderView(header, null, false);
         } else {
 //            View topPaddingView = new View(activity);

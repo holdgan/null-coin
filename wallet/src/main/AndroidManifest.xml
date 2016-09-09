@@ -55,13 +55,14 @@
         android:theme="@style/AppTheme" >
 
 
-        <activity android:name="com.coinomi.wallet.begin.CreateSeedActivity">
+        <activity android:name="com.coinomi.wallet.begin.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.coinomi.wallet.begin.CreateSeedActivity" />
         <activity android:name="com.coinomi.wallet.begin.SelectCoinsActivty" />
         <activity android:name="com.coinomi.wallet.begin.SetPsswordActivity" />
         <activity android:name="com.coinomi.wallet.begin.VerificationSeedActivity" />

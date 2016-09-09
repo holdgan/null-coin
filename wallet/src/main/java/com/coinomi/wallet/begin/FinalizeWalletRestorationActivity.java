@@ -80,6 +80,7 @@ public class FinalizeWalletRestorationActivity extends Activity {
         String seed = args.getString(Constants.ARG_SEED);
         String password = args.getString(Constants.ARG_PASSWORD);
         String seedPassword = args.getString(Constants.ARG_SEED_PASSWORD);
+
         isTestWallet = args.getBoolean(Constants.ARG_TEST_WALLET, false);
         List<CoinType> coinsToCreate = getCoinsTypes(args);
 

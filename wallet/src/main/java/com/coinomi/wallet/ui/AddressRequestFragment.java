@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -32,10 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coinomi.core.coins.CoinType;
-import com.coinomi.core.coins.FiatType;
 import com.coinomi.core.coins.Value;
 import com.coinomi.core.uri.CoinURI;
-import com.coinomi.core.util.ExchangeRate;
 import com.coinomi.core.util.GenericUtils;
 import com.coinomi.core.wallet.WalletPocketHD;
 import com.coinomi.core.wallet.exceptions.Bip44KeyLookAheadExceededException;
@@ -83,8 +80,8 @@ public class AddressRequestFragment extends Fragment {
     private TextView addressLabelView;
     private TextView addressView;
     private ImageView qrView;
-    private CurrencyCalculatorLink amountCalculatorLink;
-    private View previousAddressesLink;
+//    private CurrencyCalculatorLink amountCalculatorLink;
+//    private View previousAddressesLink;
 
 //    private NavigationDrawerFragment mNavigationDrawerFragment;
     private String accountId;
@@ -106,8 +103,8 @@ public class AddressRequestFragment extends Fragment {
                 case UPDATE_VIEW:
                     ref.updateView();
                     break;
-                case UPDATE_EXCHANGE_RATE:
-                    ref.amountCalculatorLink.setExchangeRate((ExchangeRate) msg.obj);
+//                case UPDATE_EXCHANGE_RATE:
+//                    ref.amountCalculatorLink.setExchangeRate((ExchangeRate) msg.obj);
             }
         }
     }
@@ -191,20 +188,20 @@ public class AddressRequestFragment extends Fragment {
         sendCoinAmountView.setType(type);
         sendCoinAmountView.setFormat(type.getMonetaryFormat());
 
-        AmountEditView sendLocalAmountView = (AmountEditView) view.findViewById(R.id.send_local_amount);
-        sendLocalAmountView.setFormat(FiatType.FRIENDLY_FORMAT);
+//        AmountEditView sendLocalAmountView = (AmountEditView) view.findViewById(R.id.send_local_amount);
+//        sendLocalAmountView.setFormat(FiatType.FRIENDLY_FORMAT);
+//
+//        amountCalculatorLink = new CurrencyCalculatorLink(sendCoinAmountView, sendLocalAmountView);
 
-        amountCalculatorLink = new CurrencyCalculatorLink(sendCoinAmountView, sendLocalAmountView);
-
-        previousAddressesLink = view.findViewById(R.id.view_previous_addresses);
-        previousAddressesLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PreviousAddressesActivity.class);
-                intent.putExtra(Constants.ARG_ACCOUNT_ID, accountId);
-                startActivity(intent);
-            }
-        });
+//        previousAddressesLink = view.findViewById(R.id.view_previous_addresses);
+//        previousAddressesLink.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getActivity(), PreviousAddressesActivity.class);
+//                intent.putExtra(Constants.ARG_ACCOUNT_ID, accountId);
+//                startActivity(intent);
+//            }
+//        });
 
         updateView();
 
@@ -235,7 +232,7 @@ public class AddressRequestFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        amountCalculatorLink.setListener(amountsListener);
+//        amountCalculatorLink.setListener(amountsListener);
         resolver.registerContentObserver(AddressBookProvider.contentUri(
                 getActivity().getPackageName(), type), true, addressBookObserver);
 
@@ -245,7 +242,7 @@ public class AddressRequestFragment extends Fragment {
     @Override
     public void onPause() {
         resolver.unregisterContentObserver(addressBookObserver);
-        amountCalculatorLink.setListener(null);
+//        amountCalculatorLink.setListener(null);
         super.onPause();
     }
 
@@ -365,12 +362,12 @@ public class AddressRequestFragment extends Fragment {
             receiveAddress = pocket.getReceiveAddress(config.isManualAddressManagement());
         }
 
-        // Don't show previous addresses link if we are showing a specific address
-        if (showAddress == null && pocket.getNumberIssuedReceiveAddresses() != 0) {
-            previousAddressesLink.setVisibility(View.VISIBLE);
-        } else {
-            previousAddressesLink.setVisibility(View.GONE);
-        }
+//        // Don't show previous addresses link if we are showing a specific address
+//        if (showAddress == null && pocket.getNumberIssuedReceiveAddresses() != 0) {
+//            previousAddressesLink.setVisibility(View.VISIBLE);
+//        } else {
+//            previousAddressesLink.setVisibility(View.GONE);
+//        }
 
         // TODO, get amount and description, update QR if needed
 
@@ -384,11 +381,11 @@ public class AddressRequestFragment extends Fragment {
      * @param qrContent
      */
     private void updateQrCode(final String qrContent) {
-        if (lastQrContent == null || !lastQrContent.equals(qrContent)) {
+//        if (lastQrContent == null || !lastQrContent.equals(qrContent)) {
             Bitmap qrCodeBitmap = Qr.bitmap(qrContent, maxQrSize);
             qrView.setImageBitmap(qrCodeBitmap);
             lastQrContent = qrContent;
-        }
+//        }
     }
 
     private void updateLabel() {
@@ -447,12 +444,12 @@ public class AddressRequestFragment extends Fragment {
         }
 
         void checkAndUpdateAmount() {
-            Value amountParsed = amountCalculatorLink.getPrimaryAmount();
-            if (isValid(amountParsed)) {
-                amount = amountParsed;
-            } else {
-                amount = null;
-            }
+//            Value amountParsed = amountCalculatorLink.getPrimaryAmount();
+//            if (isValid(amountParsed)) {
+//                amount = amountParsed;
+//            } else {
+//                amount = null;
+//            }
             updateView();
         }
 

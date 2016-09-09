@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ccc"
+    android:background="#F0FFFF"
     tools:context=".ui.ReceiveFragment">
 
     <ScrollView
@@ -77,25 +77,24 @@
 
                     <com.coinomi.wallet.ui.widget.AmountEditView
                         android:id="@+id/send_coin_amount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5" />
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
-                    <com.coinomi.wallet.ui.widget.AmountEditView
-                        android:id="@+id/send_local_amount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5" />
+                    <!--<com.coinomi.wallet.ui.widget.AmountEditView-->
+                        <!--android:id="@+id/send_local_amount"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="0.5" />-->
                 </LinearLayout>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/view_previous_addresses"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                style="@style/BorderlessButtonLink"
-                android:text="@string/view_previous_addresses" />
+            <!--<Button-->
+                <!--android:id="@+id/view_previous_addresses"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--style="@style/BorderlessButtonLink"-->
+                <!--android:text="@string/view_previous_addresses" />-->
 
         </LinearLayout>
     </ScrollView>

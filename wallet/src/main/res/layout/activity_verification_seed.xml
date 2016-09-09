@@ -52,6 +52,12 @@
         android:textColor="@color/fg_error"
         android:textColorLink="@color/fg_error" />
 
+    <EditText
+        android:id="@+id/et_verification"
+        android:layout_width="match_parent"
+        android:layout_above="@+id/bt_vrificationseed_next"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/bt_vrificationseed_next"
         android:layout_width="wrap_content"

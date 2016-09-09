@@ -54,6 +54,7 @@ public class CreateSeedActivity extends Activity {
                 Intent intent = new Intent();
                 Bundle args = new Bundle();
                 args.putString(Constants.ARG_SEED, mnemonicView.getText().toString());
+                args.putString("verification", "create");
                 intent.setClass(mContext, VerificationSeedActivity.class);
                 intent.putExtras(args);
                 startActivity(intent);

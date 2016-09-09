@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ public class VerificationSeedActivity extends Activity {
     private Button bt_vrificationseed_next;
     private TextView restore_message;
     private MultiAutoCompleteTextView mnemonicTextView;
+    private EditText et_verification;
 
     private String seed;
 
@@ -50,6 +52,7 @@ public class VerificationSeedActivity extends Activity {
 
         bt_vrificationseed_next = (Button) findViewById(R.id.bt_vrificationseed_next);
         mnemonicTextView = (MultiAutoCompleteTextView) findViewById(R.id.seed);
+        et_verification = (EditText) findViewById(R.id.et_verification);
         // Restore message
         restore_message = (TextView) findViewById(R.id.restore_message);
         ImageButton scanQrButton = (ImageButton) findViewById(R.id.scan_qr_code);
@@ -63,7 +66,9 @@ public class VerificationSeedActivity extends Activity {
         });
 
         Bundle bundle = getIntent().getExtras();
-        seed = bundle.getString(Constants.ARG_SEED);
+        if (bundle.getString("verification").equals("create")) {
+            seed = bundle.getString(Constants.ARG_SEED);
+        }
         restore_message.setVisibility(View.GONE);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,
                 R.layout.item_simple, MnemonicCode.INSTANCE.getWordList());
@@ -96,6 +101,7 @@ public class VerificationSeedActivity extends Activity {
 //                args.putString(Constants.ARG_SEED_PASSWORD, bip39Passphrase.getText().toString());
 //            }
             args.putString(Constants.ARG_SEED, mnemonicTextView.getText().toString().trim());
+            args.putString(Constants.ARG_SEED_PASSWORD, et_verification.getText().toString().trim());
 //            if (mListener != null) mListener.onSeedVerified(args);
             Intent intent = new Intent();
 //            intent.putExtra(Constants.ARG_SEED, seed);
