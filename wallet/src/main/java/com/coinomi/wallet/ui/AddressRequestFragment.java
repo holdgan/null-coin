@@ -147,7 +147,8 @@ public class AddressRequestFragment extends Fragment {
             accountId = args.getString(Constants.ARG_ACCOUNT_ID);
             if (args.containsKey(Constants.ARG_ADDRESS)) {
                 showAddress = (Address) args.getSerializable(Constants.ARG_ADDRESS);
-            }
+
+                 }
         }
         // TODO
         pocket = (WalletPocketHD) checkNotNull(walletApplication.getAccount(accountId));

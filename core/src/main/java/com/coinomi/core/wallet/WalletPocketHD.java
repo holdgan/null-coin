@@ -50,7 +50,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import static com.coinomi.core.Preconditions.checkArgument;
 import static com.coinomi.core.Preconditions.checkNotNull;
 import static com.coinomi.core.Preconditions.checkState;
 import static org.bitcoinj.wallet.KeyChain.KeyPurpose.CHANGE;
@@ -593,13 +592,13 @@ public class WalletPocketHD extends AbstractWallet {
     public Address getAddress(SimpleHDKeyChain.KeyPurpose purpose,
                               boolean isManualAddressManagement) {
         Address receiveAddress = null;
-        if (isManualAddressManagement) {
+//        if (isManualAddressManagement) {
             receiveAddress = getLastUsedAddress(purpose);
-        }
+//        }
 
-        if (receiveAddress == null) {
-            receiveAddress = currentAddress(purpose);
-        }
+//        if (receiveAddress == null) {
+//            receiveAddress = currentAddress(purpose);
+//        }
         return receiveAddress;
     }
 

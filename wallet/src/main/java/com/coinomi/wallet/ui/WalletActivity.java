@@ -31,6 +31,7 @@ import com.coinomi.core.wallet.WalletAccount;
 import com.coinomi.wallet.Constants;
 import com.coinomi.wallet.R;
 import com.coinomi.wallet.begin.ChangeColorIconWithText;
+import com.coinomi.wallet.begin.WelcomeActivity;
 import com.coinomi.wallet.service.CoinService;
 import com.coinomi.wallet.service.CoinServiceImpl;
 import com.coinomi.wallet.tasks.CheckUpdateTask;
@@ -178,12 +179,9 @@ final public class WalletActivity extends BaseWalletActivity implements
         }
 
 
-
 //        mViewPager.setAdapter(mAdapter);
 //            mTabIndicators.get(2).setIconAlpha(1.0f);
 //            mViewPager.setCurrentItem(2, false);
-
-
 
 
     }
@@ -601,8 +599,10 @@ final public class WalletActivity extends BaseWalletActivity implements
     }
 
     private void startIntro() {
-        Intent introIntent = new Intent(this, IntroActivity.class);
-        startActivity(introIntent);
+        Intent intent = new Intent();
+        intent.setClass(WalletActivity.this, WelcomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -804,7 +804,7 @@ final public class WalletActivity extends BaseWalletActivity implements
     }
 
     private void initDatas(String accountId) {
-        Fragment receive =  AddressRequestFragment.newInstance(accountId);
+        Fragment receive = AddressRequestFragment.newInstance(accountId);
         Fragment record = BalanceFragment.newInstance(accountId);
         Fragment send = SendFragment.newInstance(accountId);
         mTabs.add(receive);
